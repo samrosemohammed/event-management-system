@@ -1,10 +1,17 @@
+import { Container } from "@mui/material";
 import "./App.css";
-import { EventCard } from "./components/event-card";
+import { EventForm } from "./components/event-form";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 function App() {
   return (
     <>
-      <EventCard />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Container>
+          <EventForm />
+        </Container>
+      </LocalizationProvider>
     </>
   );
 }
