@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import type { EventFormData } from "../types/event";
 import { useState } from "react";
 import { EventForm } from "./event-form";
+import { AlertDialog } from "./alert-dialog";
 
 export const EventCard = () => {
   const events = JSON.parse(localStorage.getItem("events") || "[]");
@@ -27,7 +28,10 @@ export const EventCard = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventFormData | undefined>(
     undefined
   );
-
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [eventToDelete, setEventToDelete] = useState<EventFormData | null>(
+    null
+  );
   if (events.length === 0) {
     return (
       <Box
@@ -69,6 +73,19 @@ export const EventCard = () => {
   };
 
   const handleCloseEdit = () => setEdit(false);
+
+  const handleDeleteConfirmed = () => {
+    if (!eventToDelete) return;
+    const existingEvents: EventFormData[] = JSON.parse(
+      localStorage.getItem("events") || "[]"
+    );
+    const updatedEvents = existingEvents.filter(
+      (e) => e.id !== eventToDelete.id
+    );
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
+    setAlertOpen(false);
+    setEventToDelete(null);
+  };
 
   return (
     <Box sx={{ mt: 3 }}>
@@ -229,6 +246,10 @@ export const EventCard = () => {
                   alignItems: "center",
                   gap: 0.5,
                 }}
+                onClick={() => {
+                  setAlertOpen(true);
+                  setEventToDelete(event);
+                }}
               >
                 <DeleteOutline fontSize="inherit" />
                 Delete
@@ -242,6 +263,21 @@ export const EventCard = () => {
           isEditMode={edit}
           onClose={handleCloseEdit}
           defaultValues={selectedEvent}
+        />
+      )}
+      {alertOpen && (
+        <AlertDialog
+          open={alertOpen}
+          onClose={() => {
+            setAlertOpen(false);
+            setEventToDelete(null);
+          }}
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this event? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          showCancel={true}
+          onConfirm={handleDeleteConfirmed}
         />
       )}
     </Box>
