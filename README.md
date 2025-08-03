@@ -1,7 +1,9 @@
 # Event Management App
 
-A simple Event Management system built with React, TypeScript, and Material UI. This frontend application allows users to add, view, update, and delete events for an organization.
+A simple Event Management system built with React, TypeScript, and Material UI. This frontend application allows users to add, view, update, and delete events for an organization. [(Live Demo)](https://event-management-system-theta-teal.vercel.app/)
 
+## 🎥 Demo Vedio
+https://github.com/user-attachments/assets/f3d7aafd-82de-4c20-98d0-de217f198c98
 
 ## 🚀 Features
 
