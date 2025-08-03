@@ -11,6 +11,8 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useEffect, useState } from "react";
@@ -20,6 +22,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { categories, type EventFormData } from "../types/event";
 import { v4 as uuidv4 } from "uuid";
+import { AppSnackbar } from "./app-snackbar";
 
 interface EventFormProps {
   isEditMode?: boolean;
@@ -32,6 +35,9 @@ export const EventForm = ({
   defaultValues,
 }: EventFormProps) => {
   const [open, setOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [conflictError, setConflictError] = useState<string | null>(null);
+
   const {
     handleSubmit,
     register,
@@ -49,6 +55,7 @@ export const EventForm = ({
       ...defaultValues,
     },
   });
+
   useEffect(() => {
     if (isEditMode && defaultValues) {
       reset({
@@ -67,7 +74,22 @@ export const EventForm = ({
 
   const onSubmit = (data: EventFormData) => {
     const existingEvents = JSON.parse(localStorage.getItem("events") || "[]");
+    const selectedTime = dayjs(data.dateTime);
+    const hasConflict = existingEvents.some((event: any) => {
+      if (isEditMode && event.id === defaultValues?.id) return false;
 
+      const eventTime = dayjs(event.dateTime);
+      return Math.abs(selectedTime.diff(eventTime, "minute")) < 60;
+    });
+
+    if (hasConflict) {
+      setConflictError(
+        "Time conflict: Another event is scheduled within 1 hour of this time. Please choose a different time."
+      );
+      return;
+    }
+
+    setConflictError(null); // clear previous errors if any
     if (isEditMode && defaultValues?.id) {
       const updatedEvents = existingEvents.map((event: EventFormData) =>
         event.id === defaultValues.id
@@ -87,6 +109,7 @@ export const EventForm = ({
         JSON.stringify([...existingEvents, newEvent])
       );
     }
+    setShowToast(true);
     handleClose();
   };
 
@@ -112,6 +135,11 @@ export const EventForm = ({
               ? "Update the event information below."
               : "Please fill out the event information below."}
           </DialogContentText>
+          {conflictError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {conflictError}
+            </Alert>
+          )}
           <Box
             component="form"
             onSubmit={handleSubmit(onSubmit)}
@@ -156,6 +184,10 @@ export const EventForm = ({
                 render={({ field }) => (
                   <DateTimePicker
                     {...field}
+                    onChange={(newValue) => {
+                      setConflictError(null);
+                      field.onChange(newValue);
+                    }}
                     label="Event Date & Time"
                     slotProps={{
                       textField: {
@@ -213,6 +245,12 @@ export const EventForm = ({
           </Box>
         </DialogContent>
       </Dialog>
+      <AppSnackbar
+        open={showToast}
+        onClose={() => setShowToast(false)}
+        message={"Event created successfully!"}
+        severity="success"
+      />
     </>
   );
 };

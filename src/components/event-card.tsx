@@ -22,9 +22,11 @@ import type { EventFormData } from "../types/event";
 import { useState } from "react";
 import { EventForm } from "./event-form";
 import { AlertDialog } from "./alert-dialog";
+import { AppSnackbar } from "./app-snackbar";
 
 export const EventCard = () => {
   const events = JSON.parse(localStorage.getItem("events") || "[]");
+  const [showToast, setShowToast] = useState(false);
   const [edit, setEdit] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventFormData | undefined>(
     undefined
@@ -85,6 +87,7 @@ export const EventCard = () => {
     );
     localStorage.setItem("events", JSON.stringify(updatedEvents));
     setAlertOpen(false);
+    setShowToast(true);
     setEventToDelete(null);
   };
 
@@ -315,6 +318,12 @@ export const EventCard = () => {
           onConfirm={handleDeleteConfirmed}
         />
       )}
+      <AppSnackbar
+        open={showToast}
+        onClose={() => setShowToast(false)}
+        message={"Event Deleted"}
+        severity="success"
+      />
     </Box>
   );
 };
