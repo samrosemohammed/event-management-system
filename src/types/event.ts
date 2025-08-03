@@ -1,11 +1,12 @@
-export interface Event {
-  id: string;
+import type dayjs from "dayjs";
+
+export type EventFormData = {
   title: string;
   description: string;
   venue: string;
-  date: string;
-  type: string;
-  priority: "low" | "medium" | "high";
-  organizer?: string;
-  maxAttendees?: number;
-}
+  category?: string;
+  dateTime: dayjs.Dayjs;
+  maxAttendance?: number;
+};
+
+export const categories = ["Conference", "Workshop", "Meetup", "Webinar"];
