@@ -1,6 +1,3 @@
-// components/AlertDialog.tsx
-
-import * as React from "react";
 import {
   Dialog,
   DialogTitle,

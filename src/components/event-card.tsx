@@ -13,6 +13,7 @@ import {
   CalendarToday,
   DeleteOutline,
   Edit,
+  History,
   LocationOn,
   People,
 } from "@mui/icons-material";
@@ -89,175 +90,209 @@ export const EventCard = () => {
 
   return (
     <Box sx={{ mt: 3 }}>
-      {events.map((event: EventFormData, index: number) => (
-        <Card
-          key={index}
-          sx={{
-            maxWidth: "100%",
-            mb: 3,
-            borderRadius: 2,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            transition: "all 0.3s ease-in-out",
-            "&:hover": {
-              transform: "translateY(-4px)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-            },
-            border: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                mb: 2,
-              }}
-            >
-              <Typography
-                gutterBottom
-                variant="h5"
-                component="div"
-                sx={{
-                  fontWeight: 600,
-                  color: "primary.main",
-                  mb: 1,
-                }}
-              >
-                {event.title}
-              </Typography>
-              {event.category && (
-                <Chip
-                  avatar={
-                    <Avatar
-                      sx={{
-                        bgcolor: `${getCategoryColor(event.category)}.main`,
-                        color: "white",
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {getCategoryIcon(event.category)}
-                    </Avatar>
-                  }
-                  label={event.category}
-                  color={getCategoryColor(event.category) as any}
-                  variant="outlined"
-                  size="small"
-                />
-              )}
-            </Box>
+      {events.map((event: EventFormData, index: number) => {
+        const isPastEvent = dayjs(event.dateTime).isBefore(dayjs());
 
-            {event.description && (
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "text.secondary",
-                  mb: 2,
-                  lineHeight: 1.6,
-                }}
-              >
-                {event.description}
-              </Typography>
-            )}
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CalendarToday
-                  sx={{ color: "primary.main", fontSize: "1.2rem" }}
-                />
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  {dayjs(event.dateTime).format("MMMM D, YYYY h:mm A")}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <LocationOn sx={{ color: "error.main", fontSize: "1.2rem" }} />
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  {event.venue}
-                </Typography>
-              </Box>
-
-              {event.maxAttendance && (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <People sx={{ color: "success.main", fontSize: "1.2rem" }} />
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    Max Attendance: {event.maxAttendance}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          </CardContent>
-
-          <CardActions
+        return (
+          <Card
+            key={index}
             sx={{
-              px: 3,
-              pb: 2,
-              pt: 0,
-              justifyContent: "space-between",
+              maxWidth: "100%",
+              mb: 3,
+              borderRadius: 2,
+              opacity: isPastEvent ? 0.6 : 1, // Dim past events
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+              },
+              border: "1px solid",
+              borderColor: "divider",
             }}
           >
-            <Button
-              variant="contained"
-              size="small"
+            <CardContent sx={{ p: 3 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  mb: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1,
+                  }}
+                >
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="div"
+                    sx={{
+                      fontWeight: 600,
+                      color: "primary.main",
+                      mb: 1,
+                    }}
+                  >
+                    {event.title}
+                  </Typography>
+                  {isPastEvent && (
+                    <Chip
+                      icon={<History />}
+                      label="Past Event"
+                      color="default"
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        fontSize: "0.75rem",
+                        height: "24px",
+                        color: "text.secondary",
+                        borderColor: "grey.400",
+                      }}
+                    />
+                  )}
+                </Box>
+
+                {event.category && (
+                  <Chip
+                    avatar={
+                      <Avatar
+                        sx={{
+                          bgcolor: `${getCategoryColor(event.category)}.main`,
+                          color: "white",
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        {getCategoryIcon(event.category)}
+                      </Avatar>
+                    }
+                    label={event.category}
+                    color={getCategoryColor(event.category) as any}
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+              </Box>
+
+              {event.description && (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 2,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {event.description}
+                </Typography>
+              )}
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <CalendarToday
+                    sx={{ color: "primary.main", fontSize: "1.2rem" }}
+                  />
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {dayjs(event.dateTime).format("MMMM D, YYYY h:mm A")}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LocationOn
+                    sx={{ color: "error.main", fontSize: "1.2rem" }}
+                  />
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {event.venue}
+                  </Typography>
+                </Box>
+
+                {event.maxAttendance && (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <People
+                      sx={{ color: "success.main", fontSize: "1.2rem" }}
+                    />
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      Max Attendance: {event.maxAttendance}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </CardContent>
+
+            <CardActions
               sx={{
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-              }}
-            >
-              View Details
-            </Button>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1.5,
+                px: 3,
+                pb: 2,
+                pt: 0,
+                justifyContent: "space-between",
               }}
             >
               <Button
-                variant="outlined"
+                variant={isPastEvent ? "outlined" : "contained"}
                 size="small"
                 sx={{
                   borderRadius: 2,
                   textTransform: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.5,
+                  fontWeight: 600,
                 }}
-                onClick={() => {
-                  setEdit(true);
-                  setSelectedEvent(event);
-                }}
+                disabled={isPastEvent}
               >
-                <Edit fontSize="inherit" />
-                Edit
+                {isPastEvent ? "Event Completed" : "View Details"}
               </Button>
-              <Button
-                variant="text"
-                size="small"
-                color="error"
+              <Box
                 sx={{
-                  borderRadius: 2,
-                  textTransform: "none",
                   display: "flex",
                   alignItems: "center",
-                  gap: 0.5,
-                }}
-                onClick={() => {
-                  setAlertOpen(true);
-                  setEventToDelete(event);
+                  gap: 1.5,
                 }}
               >
-                <DeleteOutline fontSize="inherit" />
-                Delete
-              </Button>
-            </Box>
-          </CardActions>
-        </Card>
-      ))}
+                <Button
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                  onClick={() => {
+                    setEdit(true);
+                    setSelectedEvent(event);
+                  }}
+                >
+                  <Edit fontSize="inherit" />
+                  Edit
+                </Button>
+                <Button
+                  variant="text"
+                  size="small"
+                  color="error"
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                  onClick={() => {
+                    setAlertOpen(true);
+                    setEventToDelete(event);
+                  }}
+                >
+                  <DeleteOutline fontSize="inherit" />
+                  Delete
+                </Button>
+              </Box>
+            </CardActions>
+          </Card>
+        );
+      })}
       {edit && (
         <EventForm
           isEditMode={edit}
