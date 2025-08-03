@@ -43,6 +43,19 @@ export const EventForm = () => {
 
   const onSubmit = (data: EventFormData) => {
     console.log("Form submitted: ", data);
+    const existingEvents = JSON.parse(localStorage.getItem("events") || "[]");
+    console.log("Existing event : ", existingEvents);
+
+    const newEvent = {
+      ...data,
+      dateTime: data.dateTime.toISOString(),
+    };
+
+    localStorage.setItem(
+      "events",
+      JSON.stringify([...existingEvents, newEvent])
+    );
+    console.log("Event saved to local storage:", newEvent);
     handleClose();
   };
 
@@ -139,13 +152,6 @@ export const EventForm = () => {
               fullWidth
               margin="normal"
               type="number"
-              slotProps={{
-                input: {
-                  inputProps: {
-                    min: 1,
-                  },
-                },
-              }}
               {...register("maxAttendance", {
                 min: {
                   value: 1,
