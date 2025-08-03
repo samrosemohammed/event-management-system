@@ -13,6 +13,7 @@ import {
   CalendarToday,
   DeleteOutline,
   Edit,
+  EventBusy,
   History,
   LocationOn,
   People,
@@ -23,6 +24,7 @@ import { useState } from "react";
 import { EventForm } from "./event-form";
 import { AlertDialog } from "./alert-dialog";
 import { AppSnackbar } from "./app-snackbar";
+import { EmptyState } from "./empty";
 
 export const EventCard = () => {
   const events = JSON.parse(localStorage.getItem("events") || "[]");
@@ -37,25 +39,11 @@ export const EventCard = () => {
   );
   if (events.length === 0) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "200px",
-          mt: 3,
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            color: "text.secondary",
-            fontStyle: "italic",
-          }}
-        >
-          No events found.
-        </Typography>
-      </Box>
+      <EmptyState
+        icon={<EventBusy sx={{ fontSize: 48, color: "text.disabled" }} />}
+        title="No events found"
+        description="Start by creating a new event!"
+      />
     );
   }
 
@@ -173,6 +161,7 @@ export const EventCard = () => {
                       </Avatar>
                     }
                     label={event.category}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     color={getCategoryColor(event.category) as any}
                     variant="outlined"
                     size="small"

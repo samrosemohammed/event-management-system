@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Snackbar,
   Alert,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -28,6 +27,7 @@ interface EventFormProps {
   isEditMode?: boolean;
   onClose?: () => void;
   defaultValues?: Partial<EventFormData>;
+  onEventsUpdate?: (updatedEvents: EventFormData[]) => void;
 }
 export const EventForm = ({
   isEditMode = false,
@@ -73,9 +73,11 @@ export const EventForm = ({
   };
 
   const onSubmit = (data: EventFormData) => {
-    const existingEvents = JSON.parse(localStorage.getItem("events") || "[]");
+    const existingEvents: EventFormData[] = JSON.parse(
+      localStorage.getItem("events") || "[]"
+    );
     const selectedTime = dayjs(data.dateTime);
-    const hasConflict = existingEvents.some((event: any) => {
+    const hasConflict = existingEvents.some((event) => {
       if (isEditMode && event.id === defaultValues?.id) return false;
 
       const eventTime = dayjs(event.dateTime);
@@ -89,7 +91,7 @@ export const EventForm = ({
       return;
     }
 
-    setConflictError(null); // clear previous errors if any
+    setConflictError(null);
     if (isEditMode && defaultValues?.id) {
       const updatedEvents = existingEvents.map((event: EventFormData) =>
         event.id === defaultValues.id
@@ -98,6 +100,7 @@ export const EventForm = ({
       );
       localStorage.setItem("events", JSON.stringify(updatedEvents));
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, ...rest } = data;
       const newEvent = {
         id: uuidv4(),
@@ -108,6 +111,7 @@ export const EventForm = ({
         "events",
         JSON.stringify([...existingEvents, newEvent])
       );
+      window.location.reload();
     }
     setShowToast(true);
     handleClose();
