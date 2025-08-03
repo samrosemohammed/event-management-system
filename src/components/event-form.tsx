@@ -13,14 +13,24 @@ import {
   Select,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { categories, type EventFormData } from "../types/event";
+import { v4 as uuidv4 } from "uuid";
 
-export const EventForm = () => {
+interface EventFormProps {
+  isEditMode?: boolean;
+  onClose?: () => void;
+  defaultValues?: Partial<EventFormData>;
+}
+export const EventForm = ({
+  isEditMode = false,
+  onClose,
+  defaultValues,
+}: EventFormProps) => {
   const [open, setOpen] = useState(false);
   const {
     handleSubmit,
@@ -30,45 +40,77 @@ export const EventForm = () => {
     formState: { errors },
   } = useForm<EventFormData>({
     defaultValues: {
+      title: "",
+      description: "",
+      venue: "",
       category: "",
       dateTime: dayjs(),
+      maxAttendance: undefined,
+      ...defaultValues,
     },
   });
+  useEffect(() => {
+    if (isEditMode && defaultValues) {
+      reset({
+        ...defaultValues,
+        dateTime: dayjs(defaultValues.dateTime),
+      });
+    }
+  }, [isEditMode, defaultValues, reset]);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
+    onClose?.();
     reset();
   };
 
   const onSubmit = (data: EventFormData) => {
-    console.log("Form submitted: ", data);
     const existingEvents = JSON.parse(localStorage.getItem("events") || "[]");
-    console.log("Existing event : ", existingEvents);
 
-    const newEvent = {
-      ...data,
-      dateTime: data.dateTime.toISOString(),
-    };
-
-    localStorage.setItem(
-      "events",
-      JSON.stringify([...existingEvents, newEvent])
-    );
-    console.log("Event saved to local storage:", newEvent);
+    if (isEditMode && defaultValues?.id) {
+      const updatedEvents = existingEvents.map((event: EventFormData) =>
+        event.id === defaultValues.id
+          ? { ...event, ...data, dateTime: data.dateTime.toISOString() }
+          : event
+      );
+      localStorage.setItem("events", JSON.stringify(updatedEvents));
+    } else {
+      const { id, ...rest } = data;
+      const newEvent = {
+        id: uuidv4(),
+        ...rest,
+        dateTime: data.dateTime.toISOString(),
+      };
+      localStorage.setItem(
+        "events",
+        JSON.stringify([...existingEvents, newEvent])
+      );
+    }
     handleClose();
   };
 
   return (
     <>
-      <Button variant="contained" onClick={handleClickOpen}>
-        Create a New Event
-      </Button>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>Create a New Event</DialogTitle>
+      {!isEditMode && (
+        <Button variant="contained" onClick={handleClickOpen}>
+          Create a New Event
+        </Button>
+      )}
+      <Dialog
+        open={open || isEditMode}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          {isEditMode ? "Edit Event" : "Create a New Event"}
+        </DialogTitle>
         <DialogContent sx={{ paddingBottom: 0 }}>
           <DialogContentText>
-            Please fill out the event information below.
+            {isEditMode
+              ? "Update the event information below."
+              : "Please fill out the event information below."}
           </DialogContentText>
           <Box
             component="form"
@@ -165,7 +207,7 @@ export const EventForm = () => {
             <DialogActions sx={{ mt: 1 }}>
               <Button onClick={handleClose}>Cancel</Button>
               <Button type="submit" variant="contained">
-                Add Event
+                {isEditMode ? "Save Changes" : "Add Event"}
               </Button>
             </DialogActions>
           </Box>

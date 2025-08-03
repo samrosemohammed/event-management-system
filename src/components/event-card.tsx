@@ -18,9 +18,15 @@ import {
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import type { EventFormData } from "../types/event";
+import { useState } from "react";
+import { EventForm } from "./event-form";
 
 export const EventCard = () => {
   const events = JSON.parse(localStorage.getItem("events") || "[]");
+  const [edit, setEdit] = useState<boolean>(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventFormData | undefined>(
+    undefined
+  );
 
   if (events.length === 0) {
     return (
@@ -61,6 +67,8 @@ export const EventCard = () => {
   const getCategoryIcon = (category: string) => {
     return category?.charAt(0)?.toUpperCase() || "E";
   };
+
+  const handleCloseEdit = () => setEdit(false);
 
   return (
     <Box sx={{ mt: 3 }}>
@@ -202,6 +210,10 @@ export const EventCard = () => {
                   alignItems: "center",
                   gap: 0.5,
                 }}
+                onClick={() => {
+                  setEdit(true);
+                  setSelectedEvent(event);
+                }}
               >
                 <Edit fontSize="inherit" />
                 Edit
@@ -225,6 +237,13 @@ export const EventCard = () => {
           </CardActions>
         </Card>
       ))}
+      {edit && (
+        <EventForm
+          isEditMode={edit}
+          onClose={handleCloseEdit}
+          defaultValues={selectedEvent}
+        />
+      )}
     </Box>
   );
 };
