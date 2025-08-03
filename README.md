@@ -1,69 +1,47 @@
-# React + TypeScript + Vite
+# Event Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple Event Management system built with React, TypeScript, and Material UI. This frontend application allows users to add, view, update, and delete events for an organization.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- **Add Event:** Create new events with required fields: Title, Description, Venue, and Date.
+- **View Events:** Display a list of all events with key details (Title, Date, Venue). Past events are visually differentiated.
+- **Update Event:** Edit existing events with validation to avoid venue and date conflicts.
+- **Delete Event:** Remove events from the list.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠 Technology Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- React 18+
+- TypeScript
+- Vite (build tool)
+- Material UI (UI components)
+- react-hook-form (form handling)
+- CSS (for styling)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or above)
+- npm or yarn
+
+### Installation
+
+```bash
+git clone https://github.com/samrosemohammed/event-management-system.git
+cd event-management-app
+npm install
+# or
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Running the App Locally
+```bash
+npm run dev
+# or
+yarn dev
 ```
+Open your browser and navigate to http://localhost:5173 (default Vite port) to see the app.
